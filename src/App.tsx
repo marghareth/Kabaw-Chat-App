@@ -1,35 +1,66 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.tsx
+
+import { useState } from 'react';
+import { JoinScreen } from './components/joinScreen';
+import { Header } from './components/Headerr';
+import { MessageList } from './components/messageList';
+import { MessageInput } from './components/messageInput';
+import { useWebSocket } from './hooks/useWebSocket';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isJoined, setIsJoined] = useState(false);
+  const [username, setUsername] = useState('');
+  const [channel, setChannel] = useState('');
+
+  // Only initialize WebSocket when joined
+  const websocketProps = isJoined ? { username, channel } : { username: '', channel: '' };
+  
+  const {
+    messages,
+    connectionStatus,
+    currentUserId,
+    sendMessage,
+    disconnect,
+  } = useWebSocket(websocketProps);
+
+  const handleJoin = (user: string, chan: string) => {
+    setUsername(user);
+    setChannel(chan);
+    setIsJoined(true);
+  };
+
+  const handleDisconnect = () => {
+    disconnect();
+    setIsJoined(false);
+    setUsername('');
+    setChannel('');
+  };
+
+  if (!isJoined) {
+    return <JoinScreen onJoin={handleJoin} />;
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="flex flex-col h-screen bg-gray-50">
+      <Header
+        channel={channel}
+        username={username}
+        userId={currentUserId}
+        connectionStatus={connectionStatus}
+        onDisconnect={handleDisconnect}
+      />
+      
+      <MessageList
+        messages={messages}
+        currentUserId={currentUserId}
+      />
+      
+      <MessageInput
+        onSendMessage={sendMessage}
+        disabled={connectionStatus !== 'connected'}
+      />
+    </div>
+  );
 }
 
-export default App
+export default App;

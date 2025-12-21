@@ -1,7 +1,6 @@
 // src/components/MessageInput.tsx
-
 import { useState, KeyboardEvent, useRef, useEffect } from 'react';
-import { Send, Plus, Smile } from 'lucide-react';
+import { Send, Paperclip, Smile } from 'lucide-react';
 
 interface MessageInputProps {
   onSendMessage: (content: string) => void;
@@ -12,7 +11,6 @@ export const MessageInput = ({ onSendMessage, disabled }: MessageInputProps) => 
   const [message, setMessage] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-resize textarea height
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -24,7 +22,6 @@ export const MessageInput = ({ onSendMessage, disabled }: MessageInputProps) => 
     if (message.trim() && !disabled) {
       onSendMessage(message);
       setMessage('');
-      // Reset height
       if (textareaRef.current) textareaRef.current.style.height = 'auto';
     }
   };
@@ -37,64 +34,63 @@ export const MessageInput = ({ onSendMessage, disabled }: MessageInputProps) => 
   };
 
   return (
-    // Outer Container: Glass background with a crisp top border
-    <div className="w-full glass border-t border-white/40 pb-safe pt-2 px-4 backdrop-blur-xl z-20">
-      <div className="max-w-4xl mx-auto py-3">
+    <div className="bg-white border-t border-gray-200 px-4 py-3">
+      <div className="max-w-4xl mx-auto">
         <div className="flex items-end gap-3">
-          
-          {/* 1. Attachment Button (The '+' style like iOS) */}
+          {/* Attachment Button */}
           <button
             disabled={disabled}
-            className="mb-1.25 p-2 rounded-full text-slate-500 hover:bg-slate-100/50 hover:text-slate-700 transition-colors disabled:opacity-50"
+            className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 mb-1"
+            title="Attach file"
           >
-            <Plus size={24} strokeWidth={2.5} />
+            <Paperclip size={20} />
           </button>
 
-          {/* 2. The Input Capsule */}
-          <div className="flex-1 relative bg-slate-100/80 focus-within:bg-white border border-transparent focus-within:border-purple-200 transition-all rounded-3xl overflow-hidden">
+          {/* Input Container */}
+          <div className="flex-1 relative bg-gray-100 rounded-lg overflow-hidden">
             <textarea
               ref={textareaRef}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyPress}
-              placeholder={disabled ? "Connecting..." : "iMessage..."}
+              placeholder={disabled ? "Connecting..." : "Type your message..."}
               disabled={disabled}
               rows={1}
-              className="w-full px-5 py-3 bg-transparent focus:outline-none text-slate-800 placeholder:text-slate-400 resize-none max-h-30"
-              style={{ minHeight: '48px' }}
+              className="w-full px-4 py-3 bg-transparent focus:outline-none text-gray-800 placeholder:text-gray-500 resize-none"
+              style={{ minHeight: '44px', maxHeight: '120px' }}
             />
             
-            {/* Emoji Button inside the capsule (Right side) */}
+            {/* Emoji Button */}
             <button 
-              className="absolute right-3 bottom-2.5 p-1 text-slate-400 hover:text-purple-500 transition-colors"
+              className="absolute right-3 bottom-3 p-1 text-gray-500 hover:text-gray-700 transition-colors"
               disabled={disabled}
+              title="Add emoji"
             >
               <Smile size={20} />
             </button>
           </div>
             
-          {/* 3. Send Button - Only shows blue when typeable */}
+          {/* Send Button */}
           <button
             onClick={handleSend}
             disabled={disabled || !message.trim()}
-            className={`mb-1.25 p-2.5 rounded-full transition-all duration-300 shadow-sm
-              ${message.trim() && !disabled
-                ? 'bg-blue-600 text-white shadow-blue-500/30 rotate-0 scale-100 hover:bg-blue-700' 
-                : 'bg-slate-200 text-slate-400 rotate-90 scale-90 cursor-not-allowed'
-              }`}
+            className={`p-2.5 rounded-lg transition-all mb-1 ${
+              message.trim() && !disabled
+                ? 'bg-linear-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 shadow-md' 
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            }`}
+            title="Send message"
           >
-            <Send size={20} fill={message.trim() ? "currentColor" : "none"} />
+            <Send size={20} className={message.trim() ? 'fill-current' : ''} />
           </button>
         </div>
         
-        {/* Helper text for disconnected state */}
-        {disabled && (
-          <div className="text-center mt-2">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-red-500 bg-red-50 px-2 py-0.5 rounded-full">
-              Reconnecting
-            </span>
-          </div>
-        )}
+        {/* Hint Text */}
+        <div className="mt-2 text-center">
+          <span className="text-xs text-gray-500">
+            Press <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-[10px] font-mono">Enter</kbd> to send • <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-[10px] font-mono">Shift</kbd> + <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-[10px] font-mono">Enter</kbd> for new line
+          </span>
+        </div>
       </div>
     </div>
   );

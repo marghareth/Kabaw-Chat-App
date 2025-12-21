@@ -1,6 +1,6 @@
 // src/components/Header.tsx
 
-import { ConnectionStatus } from './ConnectionStatus';
+import { ConnectionStatus } from './connectionStatus';
 import { ConnectionStatus as Status } from '../types/websocket.types';
 import { Hash, User, LogOut } from 'lucide-react';
 

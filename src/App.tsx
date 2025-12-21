@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { JoinScreen } from './components/joinScreen';
-import { Header } from './components/Headerr';
+import { Header } from './components/Header';
 import { MessageList } from './components/messageList';
 import { MessageInput } from './components/messageInput';
 import { useWebSocket } from './hooks/useWebSocket';
@@ -12,7 +12,6 @@ function App() {
   const [username, setUsername] = useState('');
   const [channel, setChannel] = useState('');
 
-  // Only initialize WebSocket when joined
   const websocketProps = isJoined ? { username, channel } : { username: '', channel: '' };
   
   const {
@@ -41,7 +40,7 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen gradient-bg">
       <Header
         channel={channel}
         username={username}

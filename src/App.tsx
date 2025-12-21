@@ -36,7 +36,12 @@ function App() {
   };
 
   if (!isJoined) {
-    return <JoinScreen onJoin={handleJoin} />;
+    return (
+      // We add the wrapper div here so the gradient applies to the login screen too
+      <div className="flex flex-col h-screen gradient-bg justify-center items-center">
+        <JoinScreen onJoin={handleJoin} />
+      </div>
+    );
   }
 
   return (

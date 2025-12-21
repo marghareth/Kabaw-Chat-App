@@ -1,7 +1,7 @@
 // src/components/JoinScreen.tsx
 
 import { useState } from 'react';
-import { User, Hash } from 'lucide-react';
+import { User, Hash, Wifi } from 'lucide-react';
 
 interface JoinScreenProps {
   onJoin: (username: string, channel: string) => void;
@@ -19,76 +19,90 @@ export const JoinScreen = ({ onJoin }: JoinScreenProps) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        {/* Logo/Icon */}
+    <div className="min-h-screen gradient-bg flex items-center justify-center p-4">
+      <div className="glass rounded-3xl shadow-2xl p-8 w-full max-w-md">
+        {/* Logo */}
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
-            <Hash className="w-8 h-8 text-white" />
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg">
+            <Wifi className="w-10 h-10 text-white" />
           </div>
         </div>
 
         {/* Title */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Kabaw Chat
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+            Kabaw Discord Test Client
           </h1>
-          <p className="text-gray-600">Join the conversation</p>
+          <p className="text-gray-600 text-sm">Connection Settings</p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Username
             </label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
-                id="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="channel" className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Channel
             </label>
             <div className="relative">
-              <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
-                id="channel"
                 type="text"
                 value={channel}
                 onChange={(e) => setChannel(e.target.value)}
                 placeholder="Enter channel name"
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
                 required
               />
             </div>
           </div>
 
+          {/* Server Status */}
+          <div className="flex items-center justify-center gap-2 py-2">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-sm text-gray-600">Server Online</span>
+          </div>
+
+          {/* Connect Button */}
           <button
             type="submit"
             disabled={!username.trim() || !channel.trim()}
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white py-3.5 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
           >
-            Join Chat
+            Connect
           </button>
         </form>
 
-        {/* Info */}
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-xs text-blue-700">
-            <strong>Note:</strong> Make sure the WebSocket server is running on{' '}
-            <code className="bg-blue-100 px-1 py-0.5 rounded">ws://localhost:8080</code>
-          </p>
+        {/* Instructions */}
+        <div className="mt-6 pt-6 border-t border-gray-200">
+          <p className="text-xs text-gray-600 mb-2 font-medium">Instructions:</p>
+          <ul className="text-xs text-gray-500 space-y-1">
+            <li>• Enter username and channel</li>
+            <li>• Click Connect to join</li>
+            <li>• Start chatting!</li>
+          </ul>
+          
+          <div className="mt-4 p-3 rounded-xl bg-blue-50 border border-blue-100">
+            <p className="text-xs text-blue-700">
+              <strong>Note:</strong> Make sure the WebSocket server is running on{' '}
+              <code className="bg-blue-100 px-1.5 py-0.5 rounded font-mono">ws://localhost:8080</code>
+            </p>
+          </div>
         </div>
       </div>
     </div>

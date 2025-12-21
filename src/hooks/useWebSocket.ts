@@ -17,7 +17,17 @@ export const useWebSocket = ({ username, channel }: UseWebSocketProps) => {
   
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectAttemptsRef = useRef(0);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const messageIdsRef = useRef<Set<string>>(new Set());
+  const usernameRef = useRef(username);
+  const channelRef = useRef(channel);
+  const connectRef = useRef<(() => void) | null>(null);
+
+  // Update refs when props change
+  useEffect(() => {
+    usernameRef.current = username;
+    channelRef.current = channel;
+  }, [username, channel]);
 
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
@@ -25,7 +35,12 @@ export const useWebSocket = ({ username, channel }: UseWebSocketProps) => {
       return;
     }
 
-    const wsUrl = `${WS_URL}?username=${encodeURIComponent(username)}&channel=${encodeURIComponent(channel)}`;
+    const currentUsername = usernameRef.current;
+    const currentChannel = channelRef.current;
+
+    if (!currentUsername || !currentChannel) return;
+
+    const wsUrl = `${WS_URL}?username=${encodeURIComponent(currentUsername)}&channel=${encodeURIComponent(currentChannel)}`;
     console.log('[FRONTEND-CONNECT] Attempting to connect to:', wsUrl);
     
     setConnectionStatus('connecting');
@@ -35,7 +50,7 @@ export const useWebSocket = ({ username, channel }: UseWebSocketProps) => {
       wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log(`[FRONTEND-CONNECT] Connected to WebSocket as ${username} in channel ${channel}`);
+        console.log(`[FRONTEND-CONNECT] Connected to WebSocket as ${currentUsername} in channel ${currentChannel}`);
         setConnectionStatus('connected');
         reconnectAttemptsRef.current = 0;
       };
@@ -45,7 +60,15 @@ export const useWebSocket = ({ username, channel }: UseWebSocketProps) => {
           const message: Message = JSON.parse(event.data);
           console.log('[FRONTEND-MESSAGE]', JSON.stringify(message, null, 2));
 
-          // Handle user_connected message to get user ID
+          const messageId = `${message.timestamp}-${message.username}-${message.content}`;
+          
+          if (messageIdsRef.current.has(messageId)) {
+            console.log('[FRONTEND-MESSAGE] Duplicate message ignored');
+            return;
+          }
+          
+          messageIdsRef.current.add(messageId);
+
           if (message.type === 'user_connected' && message.user_id) {
             setCurrentUserId(message.user_id);
             console.log('[FRONTEND-USER-ID] Assigned user ID:', message.user_id);
@@ -63,19 +86,18 @@ export const useWebSocket = ({ username, channel }: UseWebSocketProps) => {
       };
 
       ws.onclose = (event) => {
-        console.log(`[FRONTEND-DISCONNECT] Connection closed. Code: ${event.code}, Reason: ${event.reason}`);
+        console.log(`[FRONTEND-DISCONNECT] Connection closed. Code: ${event.code}`);
         setConnectionStatus('disconnected');
         setCurrentUserId('');
-        console.log('[FRONTEND-USER-ID] User ID cleared');
         wsRef.current = null;
 
-        // Auto-reconnect logic
         if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
           reconnectAttemptsRef.current += 1;
           console.log(`[FRONTEND-RECONNECT] Attempting reconnect ${reconnectAttemptsRef.current}/${MAX_RECONNECT_ATTEMPTS}`);
           
           reconnectTimeoutRef.current = setTimeout(() => {
-            connect();
+            // Use the ref to call the latest version of connect
+            connectRef.current?.();
           }, RECONNECT_DELAY);
         } else {
           console.log('[FRONTEND-RECONNECT] Max reconnect attempts reached');
@@ -85,7 +107,12 @@ export const useWebSocket = ({ username, channel }: UseWebSocketProps) => {
       console.error('[FRONTEND-ERROR] Failed to create WebSocket:', error);
       setConnectionStatus('error');
     }
-  }, [username, channel]);
+  }, []);
+
+  // Update the ref whenever connect changes
+  useEffect(() => {
+    connectRef.current = connect;
+  }, [connect]);
 
   const disconnect = useCallback(() => {
     console.log('[FRONTEND-DISCONNECT] User initiated disconnect');
@@ -94,7 +121,7 @@ export const useWebSocket = ({ username, channel }: UseWebSocketProps) => {
       clearTimeout(reconnectTimeoutRef.current);
     }
     
-    reconnectAttemptsRef.current = MAX_RECONNECT_ATTEMPTS; // Prevent auto-reconnect
+    reconnectAttemptsRef.current = MAX_RECONNECT_ATTEMPTS;
     
     if (wsRef.current) {
       wsRef.current.close();
@@ -103,6 +130,8 @@ export const useWebSocket = ({ username, channel }: UseWebSocketProps) => {
     
     setConnectionStatus('disconnected');
     setCurrentUserId('');
+    setMessages([]);
+    messageIdsRef.current.clear();
   }, []);
 
   const sendMessage = useCallback((content: string) => {
@@ -132,9 +161,13 @@ export const useWebSocket = ({ username, channel }: UseWebSocketProps) => {
     }
   }, []);
 
-  // Auto-connect on mount
   useEffect(() => {
-    connect();
+    if (username && channel) {
+      // Use queueMicrotask to avoid synchronous setState warning
+      queueMicrotask(() => {
+        connect();
+      });
+    }
 
     return () => {
       if (reconnectTimeoutRef.current) {
@@ -144,7 +177,7 @@ export const useWebSocket = ({ username, channel }: UseWebSocketProps) => {
         wsRef.current.close();
       }
     };
-  }, [connect]);
+  }, [username, channel, connect]);
 
   return {
     messages,

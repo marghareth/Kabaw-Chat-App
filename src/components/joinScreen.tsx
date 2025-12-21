@@ -1,5 +1,4 @@
 // src/components/JoinScreen.tsx
-
 import { useState } from 'react';
 import { User, Hash, Wifi } from 'lucide-react';
 
@@ -19,21 +18,21 @@ export const JoinScreen = ({ onJoin }: JoinScreenProps) => {
   };
 
   return (
-    <div className="min-h-screen gradient-bg flex items-center justify-center p-4">
-      <div className="glass rounded-3xl shadow-2xl p-8 w-full max-w-md">
+    <div className="min-h-screen bg-[#f0f2f5] flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-md p-8 w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg">
+          <div className="w-20 h-20 rounded-full bg-linear-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg">
             <Wifi className="w-10 h-10 text-white" />
           </div>
         </div>
 
         {/* Title */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl font-semibold bg-linear-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent mb-2">
             Kabaw Discord Test Client
           </h1>
-          <p className="text-gray-600 text-sm">Connection Settings</p>
+          <p className="text-gray-500 text-sm">Connection Settings</p>
         </div>
 
         {/* Form */}
@@ -49,7 +48,7 @@ export const JoinScreen = ({ onJoin }: JoinScreenProps) => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
-                className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
+                className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:bg-white transition-all"
                 required
               />
             </div>
@@ -66,7 +65,7 @@ export const JoinScreen = ({ onJoin }: JoinScreenProps) => {
                 value={channel}
                 onChange={(e) => setChannel(e.target.value)}
                 placeholder="Enter channel name"
-                className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
+                className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:bg-white transition-all"
                 required
               />
             </div>
@@ -74,7 +73,7 @@ export const JoinScreen = ({ onJoin }: JoinScreenProps) => {
 
           {/* Server Status */}
           <div className="flex items-center justify-center gap-2 py-2">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <div className="w-2 h-2 rounded-full bg-green-500" />
             <span className="text-sm text-gray-600">Server Online</span>
           </div>
 
@@ -82,7 +81,7 @@ export const JoinScreen = ({ onJoin }: JoinScreenProps) => {
           <button
             type="submit"
             disabled={!username.trim() || !channel.trim()}
-            className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white py-3.5 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            className="w-full bg-linear-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white py-3 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
           >
             Connect
           </button>
@@ -97,7 +96,7 @@ export const JoinScreen = ({ onJoin }: JoinScreenProps) => {
             <li>• Start chatting!</li>
           </ul>
           
-          <div className="mt-4 p-3 rounded-xl bg-blue-50 border border-blue-100">
+          <div className="mt-4 p-3 rounded-lg bg-blue-50 border border-blue-100">
             <p className="text-xs text-blue-700">
               <strong>Note:</strong> Make sure the WebSocket server is running on{' '}
               <code className="bg-blue-100 px-1.5 py-0.5 rounded font-mono">ws://localhost:8080</code>

@@ -1,7 +1,7 @@
 // src/components/Header.tsx
 import { ConnectionStatus } from './connectionStatus';
 import { ConnectionStatus as Status } from '../types/websocket.types';
-import { Hash, User, LogOut } from 'lucide-react';
+import { Hash, Settings, LogOut } from 'lucide-react';
 
 interface HeaderProps {
   channel: string;
@@ -12,51 +12,60 @@ interface HeaderProps {
 }
 
 export const Header = ({ channel, username, userId, connectionStatus, onDisconnect }: HeaderProps) => {
+  // Generate avatar color based on username
+  const getAvatarColor = (name: string) => {
+    const colors = [
+      'bg-purple-500',
+      'bg-blue-500',
+      'bg-pink-500',
+      'bg-indigo-500',
+      'bg-cyan-500',
+    ];
+    const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
+  };
+
   return (
-    // FIX 1: Changed solid background to 'glass' (using your index.css class)
-    // FIX 2: Added 'sticky top-0 z-50' so it stays pinned while messages scroll under it
-    // FIX 3: Added a subtle white border at the bottom for that "premium" feel
-    <header className="sticky top-0 z-50 w-full glass border-b border-white/40 shadow-sm px-6 py-4 backdrop-blur-md">
-      <div className="max-w-6xl mx-auto flex items-center justify-between">
+    <header className="bg-white border-b border-gray-200 px-4 py-3 shadow-sm">
+      <div className="flex items-center justify-between">
         
-        {/* Left: Channel Indicator */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 text-slate-800">
-            <div className="p-2.5 bg-white/50 rounded-xl shadow-sm border border-white/60 text-purple-600">
-              <Hash size={20} />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold tracking-tight leading-none">{channel}</h1>
-              <span className="text-xs text-slate-500 font-medium ml-0.5">Active Channel</span>
-            </div>
+        {/* Left: Channel Info */}
+        <div className="flex items-center gap-3">
+          <Hash size={20} className="text-gray-500" />
+          <h1 className="text-lg font-semibold text-gray-800">{channel}</h1>
+          <div className="hidden sm:flex items-center gap-2 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">
+            <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+            <span>3</span>
           </div>
         </div>
         
         {/* Right: User & Controls */}
-        <div className="flex items-center gap-3 sm:gap-6">
-          
-          {/* User Profile Pill */}
-          <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-white/40 rounded-full border border-white/50 shadow-sm">
-            <div className="flex flex-col items-end">
-              <span className="text-sm font-bold text-slate-700 leading-none">{username}</span>
-              {userId && (
-                <span className="text-[10px] text-slate-500 font-mono">
-                  #{userId.substring(0, 4)}
-                </span>
-              )}
-            </div>
-            <div className="p-1.5 bg-linear-to-br from-purple-500 to-blue-500 rounded-full text-white shadow-sm">
-              <User size={14} />
-            </div>
-          </div>
-
-          <div className="h-8 w-px bg-slate-300/50 hidden sm:block"></div>
-
+        <div className="flex items-center gap-3">
           <ConnectionStatus status={connectionStatus} />
           
           <button
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+            title="Settings"
+          >
+            <Settings size={20} />
+          </button>
+          
+          {/* User Avatar & Info */}
+          <div className="flex items-center gap-2">
+            <div className={`w-8 h-8 rounded-full ${getAvatarColor(username)} flex items-center justify-center text-white text-sm font-semibold`}>
+              {username.substring(0, 1).toUpperCase()}
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-sm font-medium text-gray-800">{username}</p>
+              {userId && (
+                <p className="text-xs text-gray-500">ID: demo-{userId.substring(0, 3)}</p>
+              )}
+            </div>
+          </div>
+          
+          <button
             onClick={onDisconnect}
-            className="p-2.5 rounded-xl bg-white/40 hover:bg-red-50 text-slate-500 hover:text-red-500 transition-all border border-transparent hover:border-red-100"
+            className="p-2 hover:bg-red-50 rounded-lg transition-colors text-gray-600 hover:text-red-500"
             title="Disconnect"
           >
             <LogOut size={20} />

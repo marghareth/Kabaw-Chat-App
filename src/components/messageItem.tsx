@@ -1,7 +1,6 @@
 // src/components/MessageItem.tsx
 import { Message } from '../types/message.types';
-import { getInitials } from '../utils/avatarUtils';
-import { CheckCheck } from 'lucide-react'; // You might want to add read receipts later
+import { AlertCircle, CheckCheck } from 'lucide-react';
 
 interface MessageItemProps {
   message: Message;
@@ -9,7 +8,6 @@ interface MessageItemProps {
 }
 
 export const MessageItem = ({ message, isOwnMessage }: MessageItemProps) => {
-  // Format timestamp nicely (e.g., "10:42 AM")
   const formatTime = (timestamp: string) => {
     return new Date(timestamp).toLocaleTimeString('en-US', { 
       hour: 'numeric', 
@@ -18,59 +16,99 @@ export const MessageItem = ({ message, isOwnMessage }: MessageItemProps) => {
     });
   };
 
-  // 1. Handle System Messages (Connected/Disconnected)
-  // We make these small pill-shaped glass elements in the center
+  const getAvatarColor = (name: string) => {
+    const colors = [
+      'bg-purple-500',
+      'bg-blue-500',
+      'bg-pink-500',
+      'bg-orange-500',
+      'bg-cyan-500',
+    ];
+    const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
+  };
+
+  // System Messages - Full width style like in reference
   if (message.type !== 'message') {
+    const isError = message.content.includes('not found') || message.content.includes('error');
+    const isWarning = message.content.includes('Demo Mode');
+    
     return (
-      <div className="flex justify-center my-6">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 border border-white/30 backdrop-blur-sm shadow-sm">
-          <span className={`w-1.5 h-1.5 rounded-full ${message.type === 'user_connected' ? 'bg-green-400' : 'bg-red-400'}`} />
-          <span className="text-xs font-medium text-slate-600">
-            {message.content}
-          </span>
+      <div className="flex items-start gap-3 mb-3 message-item">
+        {/* System Avatar */}
+        <div className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+          isError ? 'bg-orange-500' : isWarning ? 'bg-orange-500' : 'bg-orange-500'
+        }`}>
+          <span className="text-white font-bold text-sm">S</span>
+        </div>
+        
+        {/* System Message Content */}
+        <div className="flex-1 max-w-3xl">
+          <div className="flex items-baseline gap-2 mb-1">
+            <span className="font-semibold text-gray-800 text-sm">System</span>
+            <span className="text-xs text-gray-500">Just now</span>
+          </div>
+          
+          {/* Message Bubble - Wider for system messages */}
+          <div className="bg-white rounded-2xl px-5 py-3 shadow-sm border border-gray-100 inline-block">
+            {isError && (
+              <div className="flex items-start gap-2 text-gray-700 text-sm">
+                <AlertCircle size={16} className="text-purple-500 shrink-0 mt-0.5" />
+                <span className="wrap-break-word">{message.content}</span>
+              </div>
+            )}
+            {!isError && (
+              <p className="text-gray-700 text-sm wrap-break-word">{message.content}</p>
+            )}
+          </div>
         </div>
       </div>
     );
   }
 
-  // 2. Regular Chat Messages
-  return (
-    <div className={`group flex gap-3 mb-2 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-      
-      {/* Avatar (Only show for others) */}
-      {!isOwnMessage && (
-        <div className="shrink-0 flex flex-col justify-end"> 
-          <div className="w-8 h-8 rounded-full bg-linear-to-tr from-purple-100 to-white border border-white shadow-sm flex items-center justify-center text-[10px] font-bold text-purple-600">
-            {getInitials(message.username)}
+  // User's Own Messages (Right side, compact)
+  if (isOwnMessage) {
+    return (
+      <div className="flex justify-end mb-3 message-item">
+        <div className="flex flex-col items-end max-w-[70%]">
+          {/* Time and Username */}
+          <div className="flex items-baseline gap-2 mb-1 px-1">
+            <span className="text-xs text-gray-500">{formatTime(message.timestamp)}</span>
+            <span className="font-medium text-gray-700 text-sm">You</span>
+          </div>
+          
+          {/* Message Bubble - inline-block for proper wrapping */}
+          <div className="bg-linear-to-br from-purple-500 to-blue-500 text-white rounded-2xl rounded-tr-md px-5 py-2.5 shadow-sm inline-block">
+            <p className="text-sm leading-relaxed wrap-break-word">{message.content}</p>
+          </div>
+          
+          {/* Read receipt checkmarks */}
+          <div className="flex items-center gap-1 mt-0.5 px-1">
+            <CheckCheck size={14} className="text-gray-400" />
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {/* Message Content Wrapper */}
-      <div className={`flex flex-col max-w-[75%] ${isOwnMessage ? 'items-end' : 'items-start'}`}>
-        
-        {/* Username (Only for others) */}
-        {!isOwnMessage && (
-          <span className="text-[11px] text-slate-500 font-medium ml-1 mb-1">
-            {message.username}
-          </span>
-        )}
+  // Other Users' Messages (Left side)
+  return (
+    <div className="flex items-start gap-3 mb-3 message-item">
+      {/* User Avatar */}
+      <div className={`shrink-0 w-10 h-10 rounded-full ${getAvatarColor(message.username)} flex items-center justify-center text-white font-semibold text-sm`}>
+        {message.username.substring(0, 1).toUpperCase()}
+      </div>
 
-        {/* The Bubble */}
-        <div
-          className={`relative px-5 py-2.5 shadow-sm text-[15px] leading-relaxed wrap-break-word
-            ${isOwnMessage 
-              ? 'bg-blue-600 text-white rounded-2xl rounded-tr-sm' // Own: Solid Blue, sharp top-right corner
-              : 'bg-white/80 backdrop-blur-md text-slate-800 border border-white/50 rounded-2xl rounded-tl-sm' // Others: Glass, sharp top-left corner
-            }`}
-        >
-          {message.content}
-          
-          {/* Timestamp inside bubble */}
-          <div className={`text-[10px] mt-1 flex items-center justify-end gap-1 opacity-70 ${isOwnMessage ? 'text-blue-100' : 'text-slate-400'}`}>
-            {formatTime(message.timestamp)}
-            {isOwnMessage && <CheckCheck size={12} />}
-          </div>
+      {/* Message Content */}
+      <div className="flex-1 max-w-[70%]">
+        <div className="flex items-baseline gap-2 mb-1">
+          <span className="font-semibold text-gray-800 text-sm">{message.username}</span>
+          <span className="text-xs text-gray-500">{formatTime(message.timestamp)}</span>
+        </div>
+
+        {/* Message Bubble - inline-block for proper wrapping */}
+        <div className="bg-white rounded-2xl rounded-tl-md px-5 py-2.5 shadow-sm border border-gray-100 inline-block">
+          <p className="text-sm leading-relaxed wrap-break-word text-gray-800">{message.content}</p>
         </div>
       </div>
     </div>

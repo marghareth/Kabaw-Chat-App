@@ -54,3 +54,10 @@ body {
 .message-item {
   animation: slideInUp 0.2s ease-out;
 }
+
+/* Utility for word wrapping */
+.wrap-break-word {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

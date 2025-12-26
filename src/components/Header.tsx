@@ -1,71 +1,68 @@
-// src/components/Header.tsx
-import { ConnectionStatus } from './connectionStatus';
-import { ConnectionStatus as Status } from '../types/websocket.types';
-import { Hash, Settings, LogOut } from 'lucide-react';
+"use client"
+
+import { ConnectionStatus } from "./connectionStatus"
+import type { ConnectionStatus as Status } from "../types/websocket.types"
+import { Hash, Settings, LogOut, Users } from "lucide-react"
 
 interface HeaderProps {
-  channel: string;
-  username: string;
-  userId?: string;
-  connectionStatus: Status;
-  onDisconnect: () => void;
+  channel: string
+  username: string
+  userId?: string
+  connectionStatus: Status
+  onDisconnect: () => void
 }
 
 export const Header = ({ channel, username, userId, connectionStatus, onDisconnect }: HeaderProps) => {
-  // Generate avatar color based on username
   const getAvatarColor = (name: string) => {
-    const colors = [
-      'bg-purple-500',
-      'bg-blue-500',
-      'bg-pink-500',
-      'bg-indigo-500',
-      'bg-cyan-500',
-    ];
-    const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return colors[hash % colors.length];
-  };
+    const colors = ["bg-blue-500", "bg-indigo-500", "bg-cyan-500", "bg-teal-500", "bg-emerald-500"]
+    const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    return colors[hash % colors.length]
+  }
 
   return (
-    <header className="bg-white border-b border-gray-200 px-4 py-3 shadow-sm">
-      <div className="flex items-center justify-between">
-        
+    <header className="bg-card border-b border-border px-6 py-4 shadow-sm">
+      <div className="flex items-center justify-between max-w-7xl mx-auto">
         {/* Left: Channel Info */}
         <div className="flex items-center gap-3">
-          <Hash size={20} className="text-gray-500" />
-          <h1 className="text-lg font-semibold text-gray-800">{channel}</h1>
-          <div className="hidden sm:flex items-center gap-2 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">
-            <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-            <span>3</span>
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+            <Hash size={20} className="text-primary-foreground" />
+          </div>
+          <div>
+            <h1 className="text-lg font-semibold text-foreground">{channel}</h1>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Users size={12} />
+              <span>3 members online</span>
+            </div>
           </div>
         </div>
-        
+
         {/* Right: User & Controls */}
         <div className="flex items-center gap-3">
           <ConnectionStatus status={connectionStatus} />
-          
+
           <button
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+            className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground"
             title="Settings"
           >
             <Settings size={20} />
           </button>
-          
+
           {/* User Avatar & Info */}
-          <div className="flex items-center gap-2">
-            <div className={`w-8 h-8 rounded-full ${getAvatarColor(username)} flex items-center justify-center text-white text-sm font-semibold`}>
+          <div className="flex items-center gap-3 pl-3 border-l border-border">
+            <div className="hidden sm:block text-right">
+              <p className="text-sm font-medium text-foreground">{username}</p>
+              {userId && <p className="text-xs text-muted-foreground">#{userId.substring(0, 6)}</p>}
+            </div>
+            <div
+              className={`w-10 h-10 rounded-full ${getAvatarColor(username)} flex items-center justify-center text-white text-sm font-semibold shadow-sm`}
+            >
               {username.substring(0, 1).toUpperCase()}
             </div>
-            <div className="hidden sm:block">
-              <p className="text-sm font-medium text-gray-800">{username}</p>
-              {userId && (
-                <p className="text-xs text-gray-500">ID: demo-{userId.substring(0, 3)}</p>
-              )}
-            </div>
           </div>
-          
+
           <button
             onClick={onDisconnect}
-            className="p-2 hover:bg-red-50 rounded-lg transition-colors text-gray-600 hover:text-red-500"
+            className="p-2 hover:bg-red-50 rounded-lg transition-colors text-muted-foreground hover:text-red-500"
             title="Disconnect"
           >
             <LogOut size={20} />
@@ -73,5 +70,5 @@ export const Header = ({ channel, username, userId, connectionStatus, onDisconne
         </div>
       </div>
     </header>
-  );
-};
+  )
+}

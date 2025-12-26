@@ -1,97 +1,101 @@
-// src/components/MessageInput.tsx
-import { useState, KeyboardEvent, useRef, useEffect } from 'react';
-import { Send, Paperclip, Smile } from 'lucide-react';
+"use client"
+
+import { useState, type KeyboardEvent, useRef, useEffect } from "react"
+import { Send, Paperclip, Smile } from "lucide-react"
 
 interface MessageInputProps {
-  onSendMessage: (content: string) => void;
-  disabled?: boolean;
+  onSendMessage: (content: string) => void
+  disabled?: boolean
 }
 
 export const MessageInput = ({ onSendMessage, disabled }: MessageInputProps) => {
-  const [message, setMessage] = useState('');
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [message, setMessage] = useState("")
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+      textareaRef.current.style.height = "auto"
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`
     }
-  }, [message]);
+  }, [message])
 
   const handleSend = () => {
     if (message.trim() && !disabled) {
-      onSendMessage(message);
-      setMessage('');
-      if (textareaRef.current) textareaRef.current.style.height = 'auto';
+      onSendMessage(message)
+      setMessage("")
+      if (textareaRef.current) textareaRef.current.style.height = "auto"
     }
-  };
+  }
 
   const handleKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
     }
-  };
+  }
 
   return (
-    <div className="bg-white border-t border-gray-200 px-4 py-3">
+    <div className="bg-card px-6 py-4 shadow-sm">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-end gap-3">
+        <div className="flex items-center gap-3">
           {/* Attachment Button */}
           <button
             disabled={disabled}
-            className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 mb-1"
+            className="p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground rounded-xl transition-colors disabled:opacity-50"
             title="Attach file"
           >
             <Paperclip size={20} />
           </button>
 
           {/* Input Container */}
-          <div className="flex-1 relative bg-gray-100 rounded-lg overflow-hidden">
+          <div className="flex-1 relative bg-muted/30 rounded-xl overflow-hidden focus-within:bg-muted/50 transition-all">
             <textarea
               ref={textareaRef}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyPress}
-              placeholder={disabled ? "Connecting..." : "Type your message..."}
+              placeholder={disabled ? "Connecting..." : "Type a message..."}
               disabled={disabled}
               rows={1}
-              className="w-full px-4 py-3 bg-transparent focus:outline-none text-gray-800 placeholder:text-gray-500 resize-none"
-              style={{ minHeight: '44px', maxHeight: '120px' }}
+              className="w-full px-4 py-3 pr-12 bg-transparent focus:outline-none text-foreground placeholder:text-muted-foreground resize-none"
+              style={{ minHeight: "48px", maxHeight: "120px" }}
             />
-            
+
             {/* Emoji Button */}
-            <button 
-              className="absolute right-3 bottom-3 p-1 text-gray-500 hover:text-gray-700 transition-colors"
+            <button
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors"
               disabled={disabled}
               title="Add emoji"
             >
               <Smile size={20} />
             </button>
           </div>
-            
+
           {/* Send Button */}
           <button
             onClick={handleSend}
             disabled={disabled || !message.trim()}
-            className={`p-2.5 rounded-lg transition-all mb-1 ${
+            className={`p-3 rounded-xl transition-all ${
               message.trim() && !disabled
-                ? 'bg-linear-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 shadow-md' 
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                ? "bg-primary text-primary-foreground hover:bg-accent shadow-md hover:shadow-lg"
+                : "bg-muted text-muted-foreground cursor-not-allowed"
             }`}
             title="Send message"
           >
-            <Send size={20} className={message.trim() ? 'fill-current' : ''} />
+            <Send size={20} className={message.trim() ? "fill-current" : ""} />
           </button>
         </div>
-        
+
         {/* Hint Text */}
         <div className="mt-2 text-center">
-          <span className="text-xs text-gray-500">
-            Press <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-[10px] font-mono">Enter</kbd> to send • <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-[10px] font-mono">Shift</kbd> + <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-[10px] font-mono">Enter</kbd> for new line
+          <span className="text-xs text-muted-foreground">
+            Press <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono text-foreground">Enter</kbd> to
+            send •{" "}
+            <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono text-foreground">Shift + Enter</kbd>{" "}
+            for new line
           </span>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

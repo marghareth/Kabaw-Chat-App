@@ -1,8 +1,6 @@
-"use client"
-
 import { ConnectionStatus } from "./connectionStatus"
 import type { ConnectionStatus as Status } from "../types/websocket.types"
-import { Hash, Settings, LogOut, Users } from "lucide-react"
+import { Hash, LogOut, Settings } from "lucide-react"
 
 interface HeaderProps {
   channel: string
@@ -14,60 +12,130 @@ interface HeaderProps {
 
 export const Header = ({ channel, username, userId, connectionStatus, onDisconnect }: HeaderProps) => {
   const getAvatarColor = (name: string) => {
-    const colors = ["bg-blue-500", "bg-indigo-500", "bg-cyan-500", "bg-teal-500", "bg-emerald-500"]
-    const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    const colors = ['#5865f2','#3ba55c','#eb459e','#faa61a','#ed4245']
+    const hash = name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
     return colors[hash % colors.length]
   }
 
   return (
-    <header className="bg-card border-b border-border px-6 py-4 shadow-sm">
-      <div className="flex items-center justify-between max-w-7xl mx-auto">
-        {/* Left: Channel Info */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-            <Hash size={20} className="text-primary-foreground" />
+    <header style={{
+      background: 'var(--bg-surface)',
+      borderBottom: '1px solid var(--border)',
+      padding: '0 20px',
+      height: '56px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      flexShrink: 0,
+    }}>
+      {/* Left: Channel */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <Hash size={20} color="var(--text-muted)" strokeWidth={2.5} />
+        <span style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>
+          {channel}
+        </span>
+        <div style={{
+          width: '1px',
+          height: '20px',
+          background: 'var(--border)',
+          margin: '0 4px',
+        }} />
+        <ConnectionStatus status={connectionStatus} />
+      </div>
+
+      {/* Right: User + actions */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        {/* Settings */}
+        <button
+          title="Settings"
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--text-muted)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'background 0.15s, color 0.15s',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-hover)'
+            ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--text-primary)'
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'transparent'
+            ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)'
+          }}
+        >
+          <Settings size={18} />
+        </button>
+
+        {/* Divider */}
+        <div style={{ width: '1px', height: '20px', background: 'var(--border)', margin: '0 6px' }} />
+
+        {/* Avatar + name */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{
+            width: '32px',
+            height: '32px',
+            borderRadius: '50%',
+            background: getAvatarColor(username),
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '13px',
+            fontWeight: 600,
+            color: 'white',
+            flexShrink: 0,
+          }}>
+            {username.substring(0, 1).toUpperCase()}
           </div>
-          <div>
-            <h1 className="text-lg font-semibold text-foreground">{channel}</h1>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Users size={12} />
-              <span>3 members online</span>
-            </div>
+          <div style={{ display: 'none' }} className="sm-show">
+            <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+              {username}
+            </p>
+            {userId && (
+              <p style={{ fontSize: '11px', color: 'var(--text-muted)', lineHeight: 1.2 }}>
+                #{userId.substring(0, 6)}
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Right: User & Controls */}
-        <div className="flex items-center gap-3">
-          <ConnectionStatus status={connectionStatus} />
+        {/* Divider */}
+        <div style={{ width: '1px', height: '20px', background: 'var(--border)', margin: '0 6px' }} />
 
-          <button
-            className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground"
-            title="Settings"
-          >
-            <Settings size={20} />
-          </button>
-
-          {/* User Avatar & Info */}
-          <div className="flex items-center gap-3 pl-3 border-l border-border">
-            <div className="hidden sm:block text-right">
-              <p className="text-sm font-medium text-foreground">{username}</p>
-              {userId && <p className="text-xs text-muted-foreground">#{userId.substring(0, 6)}</p>}
-            </div>
-            <div
-              className={`w-10 h-10 rounded-full ${getAvatarColor(username)} flex items-center justify-center text-white text-sm font-semibold shadow-sm`}
-            >
-              {username.substring(0, 1).toUpperCase()}
-            </div>
-          </div>
-
-          <button
-            onClick={onDisconnect}
-            className="p-2 hover:bg-red-50 rounded-lg transition-colors text-muted-foreground hover:text-red-500"
-            title="Disconnect"
-          >
-            <LogOut size={20} />
-          </button>
-        </div>
+        {/* Disconnect */}
+        <button
+          onClick={onDisconnect}
+          title="Disconnect"
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--text-muted)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'background 0.15s, color 0.15s',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(242,63,66,0.15)'
+            ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--red)'
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'transparent'
+            ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)'
+          }}
+        >
+          <LogOut size={18} />
+        </button>
       </div>
     </header>
   )

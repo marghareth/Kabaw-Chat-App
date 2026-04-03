@@ -1,4 +1,3 @@
-// src/App.tsx
 import { useState } from 'react';
 import { JoinScreen } from './components/joinScreen';
 import { Header } from './components/Header';
@@ -12,14 +11,8 @@ function App() {
   const [channel, setChannel] = useState('');
 
   const websocketProps = isJoined ? { username, channel } : { username: '', channel: '' };
-  
-  const {
-    messages,
-    connectionStatus,
-    currentUserId,
-    sendMessage,
-    disconnect,
-  } = useWebSocket(websocketProps);
+
+  const { messages, connectionStatus, currentUserId, sendMessage, disconnect } = useWebSocket(websocketProps);
 
   const handleJoin = (user: string, chan: string) => {
     setUsername(user);
@@ -39,7 +32,14 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col h-screen w-full bg-[#f0f2f5] overflow-hidden">
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100vh',
+      width: '100%',
+      background: 'var(--bg-base)',
+      overflow: 'hidden',
+    }}>
       <Header
         channel={channel}
         username={username}
@@ -47,17 +47,12 @@ function App() {
         connectionStatus={connectionStatus}
         onDisconnect={handleDisconnect}
       />
-      
-      <div className="flex-1 overflow-hidden">
-        <MessageList
-          messages={messages}
-          currentUserId={currentUserId}
-        />
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <MessageList messages={messages} currentUserId={currentUserId} />
       </div>
-
-      <MessageInput 
-        onSendMessage={sendMessage} 
-        disabled={connectionStatus !== 'connected'} 
+      <MessageInput
+        onSendMessage={sendMessage}
+        disabled={connectionStatus !== 'connected'}
       />
     </div>
   );

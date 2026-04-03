@@ -1,18 +1,36 @@
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+:root {
+  --bg-base: #0e0f13;
+  --bg-surface: #16181f;
+  --bg-elevated: #1e2028;
+  --bg-hover: #252833;
+  --bg-input: #12141a;
+  --accent: #5865f2;
+  --accent-hover: #4752c4;
+  --green: #23a55a;
+  --red: #f23f42;
+  --yellow: #f0b132;
+  --text-primary: #f2f3f5;
+  --text-secondary: #9da3b4;
+  --text-muted: #5c6272;
+  --border: #2a2d3a;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f0f2f5;
 }
 
 #root {
@@ -21,41 +39,21 @@ body {
   overflow: hidden;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2a2d3a; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #3a3f52; }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c1c9d2;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #a8b3c0;
-}
-
-/* Subtle animations */
+/* Message animation */
 @keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
 .message-item {
-  animation: slideInUp 0.2s ease-out;
+  animation: slideInUp 0.18s ease-out;
 }
 
-/* Utility for word wrapping */
 .wrap-break-word {
   word-wrap: break-word;
   overflow-wrap: break-word;

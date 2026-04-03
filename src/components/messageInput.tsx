@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, type KeyboardEvent, useRef, useEffect } from "react"
 import { Send, Paperclip, Smile } from "lucide-react"
 
@@ -27,75 +25,164 @@ export const MessageInput = ({ onSendMessage, disabled }: MessageInputProps) => 
     }
   }
 
-  const handleKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handleSend()
     }
   }
 
+  const canSend = message.trim() && !disabled
+
   return (
-    <div className="bg-card px-6 py-4 shadow-sm">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-3">
-          {/* Attachment Button */}
-          <button
-            disabled={disabled}
-            className="p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground rounded-xl transition-colors disabled:opacity-50"
-            title="Attach file"
-          >
-            <Paperclip size={20} />
-          </button>
+    <div style={{
+      background: 'var(--bg-surface)',
+      borderTop: '1px solid var(--border)',
+      padding: '12px 16px 16px',
+      flexShrink: 0,
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        gap: '8px',
+        background: 'var(--bg-elevated)',
+        border: '1px solid var(--border)',
+        borderRadius: '12px',
+        padding: '4px 4px 4px 8px',
+        transition: 'border-color 0.2s',
+      }}
+        onFocusCapture={e => (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(88,101,242,0.5)'}
+        onBlurCapture={e => (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border)'}
+      >
+        {/* Attach */}
+        <button
+          disabled={disabled}
+          title="Attach file"
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--text-muted)',
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            opacity: disabled ? 0.4 : 1,
+            transition: 'color 0.15s',
+          }}
+          onMouseEnter={e => !disabled && ((e.currentTarget as HTMLButtonElement).style.color = 'var(--text-secondary)')}
+          onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)')}
+        >
+          <Paperclip size={18} />
+        </button>
 
-          {/* Input Container */}
-          <div className="flex-1 relative bg-muted/30 rounded-xl overflow-hidden focus-within:bg-muted/50 transition-all">
-            <textarea
-              ref={textareaRef}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={handleKeyPress}
-              placeholder={disabled ? "Connecting..." : "Type a message..."}
-              disabled={disabled}
-              rows={1}
-              className="w-full px-4 py-3 pr-12 bg-transparent focus:outline-none text-foreground placeholder:text-muted-foreground resize-none"
-              style={{ minHeight: "48px", maxHeight: "120px" }}
-            />
+        {/* Textarea */}
+        <textarea
+          ref={textareaRef}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={disabled ? "Connecting..." : "Message #channel"}
+          disabled={disabled}
+          rows={1}
+          style={{
+            flex: 1,
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            color: 'var(--text-primary)',
+            fontSize: '14px',
+            lineHeight: 1.5,
+            resize: 'none',
+            padding: '8px 4px',
+            minHeight: '36px',
+            maxHeight: '120px',
+            fontFamily: 'inherit',
+          }}
+        />
 
-            {/* Emoji Button */}
-            <button
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors"
-              disabled={disabled}
-              title="Add emoji"
-            >
-              <Smile size={20} />
-            </button>
-          </div>
+        {/* Emoji */}
+        <button
+          disabled={disabled}
+          title="Add emoji"
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--text-muted)',
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            opacity: disabled ? 0.4 : 1,
+            transition: 'color 0.15s',
+          }}
+          onMouseEnter={e => !disabled && ((e.currentTarget as HTMLButtonElement).style.color = 'var(--text-secondary)')}
+          onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)')}
+        >
+          <Smile size={18} />
+        </button>
 
-          {/* Send Button */}
-          <button
-            onClick={handleSend}
-            disabled={disabled || !message.trim()}
-            className={`p-3 rounded-xl transition-all ${
-              message.trim() && !disabled
-                ? "bg-primary text-primary-foreground hover:bg-accent shadow-md hover:shadow-lg"
-                : "bg-muted text-muted-foreground cursor-not-allowed"
-            }`}
-            title="Send message"
-          >
-            <Send size={20} className={message.trim() ? "fill-current" : ""} />
-          </button>
-        </div>
-
-        {/* Hint Text */}
-        <div className="mt-2 text-center">
-          <span className="text-xs text-muted-foreground">
-            Press <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono text-foreground">Enter</kbd> to
-            send •{" "}
-            <kbd className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-mono text-foreground">Shift + Enter</kbd>{" "}
-            for new line
-          </span>
-        </div>
+        {/* Send */}
+        <button
+          onClick={handleSend}
+          disabled={!canSend}
+          title="Send message"
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            border: 'none',
+            background: canSend ? 'var(--accent)' : 'transparent',
+            color: canSend ? 'white' : 'var(--text-muted)',
+            cursor: canSend ? 'pointer' : 'not-allowed',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            transition: 'background 0.15s, color 0.15s',
+          }}
+          onMouseEnter={e => canSend && ((e.currentTarget as HTMLButtonElement).style.background = 'var(--accent-hover)')}
+          onMouseLeave={e => canSend && ((e.currentTarget as HTMLButtonElement).style.background = 'var(--accent)')}
+        >
+          <Send size={16} />
+        </button>
       </div>
+
+      {/* Hint */}
+      <p style={{
+        textAlign: 'center',
+        fontSize: '11px',
+        color: 'var(--text-muted)',
+        marginTop: '8px',
+      }}>
+        <kbd style={{
+          background: 'var(--bg-hover)',
+          border: '1px solid var(--border)',
+          borderRadius: '4px',
+          padding: '1px 5px',
+          fontFamily: 'monospace',
+          fontSize: '10px',
+          color: 'var(--text-secondary)',
+        }}>Enter</kbd>
+        {' '}to send &nbsp;·&nbsp;{' '}
+        <kbd style={{
+          background: 'var(--bg-hover)',
+          border: '1px solid var(--border)',
+          borderRadius: '4px',
+          padding: '1px 5px',
+          fontFamily: 'monospace',
+          fontSize: '10px',
+          color: 'var(--text-secondary)',
+        }}>Shift+Enter</kbd>
+        {' '}for new line
+      </p>
     </div>
   )
 }

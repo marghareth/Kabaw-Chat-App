@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useRef } from "react"
 import type { Message } from "../types/message.types"
 import { MessageItem } from "./messageItem"
@@ -13,26 +11,53 @@ interface MessageListProps {
 export const MessageList = ({ messages, currentUserId }: MessageListProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
-
   useEffect(() => {
-    scrollToBottom()
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 bg-background">
+    <div style={{
+      flex: 1,
+      overflowY: 'auto',
+      padding: '16px 20px',
+      background: 'var(--bg-base)',
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+    }}>
       {messages.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-full">
-          <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center mb-4">
-            <MessageSquare className="w-10 h-10 text-muted-foreground" />
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+          color: 'var(--text-muted)',
+        }}>
+          <div style={{
+            width: '56px',
+            height: '56px',
+            borderRadius: '16px',
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <MessageSquare size={24} color="var(--text-muted)" />
           </div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">No messages yet</h3>
-          <p className="text-sm text-muted-foreground">Be the first to say hello!</p>
+          <div style={{ textAlign: 'center' }}>
+            <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px' }}>
+              No messages yet
+            </p>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+              Be the first to say hello!
+            </p>
+          </div>
         </div>
       ) : (
-        <div className="max-w-4xl mx-auto">
+        <div style={{ maxWidth: '800px', width: '100%', margin: '0 auto' }}>
           {messages.map((message, index) => (
             <MessageItem
               key={`${message.timestamp}-${index}`}
@@ -40,7 +65,7 @@ export const MessageList = ({ messages, currentUserId }: MessageListProps) => {
               isOwnMessage={message.user_id === currentUserId}
             />
           ))}
-          <div ref={messagesEndRef} className="h-4" />
+          <div ref={messagesEndRef} style={{ height: '8px' }} />
         </div>
       )}
     </div>

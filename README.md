@@ -1,73 +1,99 @@
-# React + TypeScript + Vite
+# Kabaw Chat App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> ⚠️ **Note:** This project was built as a tryout/practice task to explore real-time web communication using WebSockets.
 
-Currently, two official plugins are available:
+A real-time chat application where users can join channels and exchange messages instantly — no account or sign-up required. Just enter a username, pick a channel, and start chatting.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🔗 Live Demo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+[Click here to try it out](https://kabaw-chat-app.vercel.app/) 
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## What It Does
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Real-time messaging** — messages appear instantly for all users in the same channel
+- **Multi-channel support** — users can join different channels by name
+- **Join screen** — enter a username and channel name to connect
+- **System notifications** — the chat notifies when users join or leave
+- **Auto-reconnect** — the client automatically attempts to reconnect if the connection drops
+- **Duplicate prevention** — messages are deduplicated on the client side to avoid repeats
+- **Responsive UI** — works on desktop and mobile browsers
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Purpose
+
+This project was built as a **tryout task** to practice and demonstrate:
+
+- Working with the **WebSocket API** in a React frontend
+- Managing **real-time state** across multiple connected clients
+- Building a **custom React hook** (`useWebSocket`) to encapsulate connection logic
+- Structuring a **TypeScript React project** with clean separation of components, hooks, types, and utilities
+- Deploying a **full-stack app** with a Node.js WebSocket backend and a React frontend on separate platforms
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19, TypeScript, Vite |
+| Styling | Tailwind CSS v4 |
+| Icons | Lucide React |
+| Backend | Node.js, `ws` (WebSocket library) |
+| Frontend Hosting | Vercel |
+| Backend Hosting | Railway |
+
+---
+
+## How It Works
+
+The frontend connects to a WebSocket server using a URL that includes the username and channel as query parameters:
+
+```
+ws://localhost:8080/ws?username=Alice&channel=general
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Once connected, the server assigns the user a unique ID and broadcasts messages to everyone in the same channel in real time.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Running Locally
+
+You need two terminals — one for the backend server, one for the frontend.
+
+**1. Start the WebSocket server**
+```bash
+cd kabaw-server
+npm install
+node server.js
 ```
+
+**2. Start the frontend**
+```bash
+cd Kabaw-Chat-App-main
+npm install
+npm run dev
+```
+
+Then open `http://localhost:5173` in your browser.
+
+---
+
+## Project Structure
+
+```
+Kabaw-Chat-App-main/
+├── src/
+│   ├── components/       # UI components (Header, MessageList, MessageInput, etc.)
+│   ├── hooks/            # useWebSocket — connection logic
+│   ├── types/            # TypeScript interfaces
+│   └── utils/            # Constants and avatar utilities
+```
+
+---
+
+*Built by Marga · Tryout project*

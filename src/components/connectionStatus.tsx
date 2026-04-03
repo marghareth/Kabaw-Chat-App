@@ -1,41 +1,35 @@
-// src/components/ConnectionStatus.tsx
-import { ConnectionStatus as Status } from '../types/websocket.types';
+import { ConnectionStatus as Status } from '../types/websocket.types'
 
 interface ConnectionStatusProps {
-  status: Status;
+  status: Status
 }
 
 export const ConnectionStatus = ({ status }: ConnectionStatusProps) => {
-  const getStatusConfig = () => {
-    switch (status) {
-      case 'connected':
-        return {
-          dot: 'bg-green-500',
-          text: 'Connected',
-          textColor: 'text-green-600',
-        };
-      case 'connecting':
-        return {
-          dot: 'bg-yellow-500 animate-pulse',
-          text: 'Connecting...',
-          textColor: 'text-yellow-600',
-        };
-      case 'disconnected':
-      case 'error':
-        return {
-          dot: 'bg-red-500',
-          text: 'Disconnected',
-          textColor: 'text-red-600',
-        };
-    }
-  };
-
-  const config = getStatusConfig();
+  const config = {
+    connected:    { color: 'var(--green)',  label: 'Connected' },
+    connecting:   { color: 'var(--yellow)', label: 'Connecting...' },
+    disconnected: { color: 'var(--red)',    label: 'Disconnected' },
+    error:        { color: 'var(--red)',    label: 'Disconnected' },
+  }[status]
 
   return (
-    <div className="flex items-center gap-2">
-      <div className={`w-2 h-2 rounded-full ${config.dot}`} />
-      <span className={`text-sm font-medium ${config.textColor}`}>{config.text}</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <div style={{
+        width: '8px',
+        height: '8px',
+        borderRadius: '50%',
+        background: config.color,
+        animation: status === 'connecting' ? 'pulse 1.2s ease-in-out infinite' : 'none',
+      }} />
+      <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 500 }}>
+        {config.label}
+      </span>
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.3; }
+        }
+      `}</style>
     </div>
-  );
-};
+  )
+}

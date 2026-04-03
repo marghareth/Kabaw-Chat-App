@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useState } from "react"
 import { MessageCircle } from "lucide-react"
@@ -20,92 +18,182 @@ export const JoinScreen = ({ onJoin }: JoinScreenProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-background/60 flex items-center justify-center px-6">
-      <div className="w-full max-w-[340px] rounded-2xl bg-card border border-border shadow-lg p-8 flex flex-col gap-6">
-        {/* Header */}
-        <div className="flex flex-col items-center">
-          <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-md mb-4">
-            <MessageCircle className="w-7 h-7 text-primary-foreground" />
+    <div style={{
+      minHeight: '100vh',
+      background: 'var(--bg-base)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '24px',
+    }}>
+      {/* Subtle background glow */}
+      <div style={{
+        position: 'fixed',
+        top: '30%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '500px',
+        height: '300px',
+        background: 'radial-gradient(ellipse, rgba(88,101,242,0.12) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+
+      <div style={{
+        width: '100%',
+        maxWidth: '360px',
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border)',
+        borderRadius: '16px',
+        padding: '36px 32px',
+        position: 'relative',
+        zIndex: 1,
+      }}>
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+          <div style={{
+            width: '52px',
+            height: '52px',
+            borderRadius: '14px',
+            background: 'var(--accent)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px',
+          }}>
+            <MessageCircle size={26} color="white" />
           </div>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">Join Chat</h1>
-          <p className="text-sm text-muted-foreground mt-1">Enter your details to connect</p>
+          <h1 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
+            Welcome to Kabaw
+          </h1>
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
+            Enter your details to start chatting
+          </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <div className="space-y-4">
-            {/* Username */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 ml-1">
-                Username
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter your username"
-                  className="w-full px-4 py-2.5 rounded-xl border border-input bg-background/60 text-sm text-foreground
-                    focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Channel */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 ml-1">
-                Channel
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={channel}
-                  onChange={(e) => setChannel(e.target.value)}
-                  placeholder="Enter channel name"
-                  className="w-full px-4 py-2.5 rounded-xl border border-input bg-background/60 text-sm text-foreground
-                    focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
-                  required
-                />
-              </div>
-            </div>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Username */}
+          <div>
+            <label style={{
+              display: 'block',
+              fontSize: '11px',
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: 'var(--text-muted)',
+              marginBottom: '6px',
+            }}>
+              Username
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
+              required
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                background: 'var(--bg-input)',
+                border: '1px solid var(--border)',
+                borderRadius: '8px',
+                color: 'var(--text-primary)',
+                fontSize: '14px',
+                outline: 'none',
+                transition: 'border-color 0.2s',
+              }}
+              onFocus={e => e.target.style.borderColor = 'var(--accent)'}
+              onBlur={e => e.target.style.borderColor = 'var(--border)'}
+            />
           </div>
 
-          {/* CTA + Status */}
-          <div className="space-y-3 pt-1">
-            <button
-              type="submit"
-              disabled={!username.trim() || !channel.trim()}
-              className="w-full py-3 rounded-xl font-semibold text-primary-foreground
-                bg-gradient-to-r from-primary to-primary/90
-                shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/25
-                transition active:scale-[0.98]
-                disabled:opacity-50 disabled:pointer-events-none"
-            >
-              Connect to Chat
-            </button>
+          {/* Channel */}
+          <div>
+            <label style={{
+              display: 'block',
+              fontSize: '11px',
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: 'var(--text-muted)',
+              marginBottom: '6px',
+            }}>
+              Channel
+            </label>
+            <input
+              type="text"
+              value={channel}
+              onChange={(e) => setChannel(e.target.value)}
+              placeholder="general"
+              required
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                background: 'var(--bg-input)',
+                border: '1px solid var(--border)',
+                borderRadius: '8px',
+                color: 'var(--text-primary)',
+                fontSize: '14px',
+                outline: 'none',
+                transition: 'border-color 0.2s',
+              }}
+              onFocus={e => e.target.style.borderColor = 'var(--accent)'}
+              onBlur={e => e.target.style.borderColor = 'var(--border)'}
+            />
+          </div>
 
-            <div className="flex items-center justify-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-success" />
-              <span className="text-[11px] font-medium tracking-widest uppercase text-muted-foreground">
-                Server Online
-              </span>
-            </div>
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={!username.trim() || !channel.trim()}
+            style={{
+              marginTop: '4px',
+              width: '100%',
+              padding: '11px',
+              background: 'var(--accent)',
+              border: 'none',
+              borderRadius: '8px',
+              color: 'white',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'background 0.2s, opacity 0.2s',
+              opacity: (!username.trim() || !channel.trim()) ? 0.5 : 1,
+            }}
+            onMouseEnter={e => (e.target as HTMLButtonElement).style.background = 'var(--accent-hover)'}
+            onMouseLeave={e => (e.target as HTMLButtonElement).style.background = 'var(--accent)'}
+          >
+            Connect to Chat
+          </button>
+
+          {/* Server status */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--green)' }} />
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
+              Server online
+            </span>
           </div>
         </form>
 
-        {/* Footer */}
-        <div className="pt-4 border-t border-border/40 opacity-80">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2 text-center">
-            Connection Details
+        {/* Footer note */}
+        <div style={{
+          marginTop: '24px',
+          paddingTop: '20px',
+          borderTop: '1px solid var(--border)',
+          textAlign: 'center',
+        }}>
+          <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+            Make sure the server is running on{' '}
+            <code style={{
+              background: 'var(--bg-elevated)',
+              padding: '1px 6px',
+              borderRadius: '4px',
+              fontFamily: 'monospace',
+              color: 'var(--text-secondary)',
+            }}>
+              ws://localhost:8080
+            </code>
           </p>
-          <div className="bg-muted/20 rounded-lg p-3 border border-border/30">
-            <p className="text-[11px] text-muted-foreground/80 leading-relaxed text-center">
-              Make sure the server is running on{" "}
-              <code className="px-1 rounded bg-secondary/40 font-mono text-foreground/80">ws://localhost:8080</code> to
-              start chatting.
-            </p>
-          </div>
         </div>
       </div>
     </div>
